@@ -1,0 +1,13 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN_STOREFRONT} {
+	reverse_proxy storefront:8000
+	encode zstd gzip
+}
+
+{$DOMAIN_BACKEND} {
+	reverse_proxy medusa-backend:9000
+	encode zstd gzip
+}

@@ -1,0 +1,10 @@
+**/node_modules
+**/.next
+**/.medusa
+**/.turbo
+**/dist
+.git
+.env
+.env.*
+!.env.template
+**/uploads

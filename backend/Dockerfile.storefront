@@ -1,0 +1,22 @@
+# Context: ./backend (monorepo root). Builds the Next.js storefront (apps/storefront).
+FROM node:22-alpine AS base
+
+FROM base AS builder
+WORKDIR /app
+COPY . .
+RUN npm ci
+RUN npx turbo build --filter=@dtc/storefront
+
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/apps/storefront/public ./apps/storefront/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/storefront/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/storefront/.next/static ./apps/storefront/.next/static
+
+USER nextjs
+EXPOSE 8000
+ENV PORT=8000
+CMD ["node", "apps/storefront/server.js"]

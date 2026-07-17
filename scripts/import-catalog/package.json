@@ -1,0 +1,16 @@
+{
+  "name": "import-catalog",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "tsx import-catalog.ts"
+  },
+  "dependencies": {
+    "csv-parse": "^5.5.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.15.0",
+    "typescript": "^5.6.2"
+  }
+}

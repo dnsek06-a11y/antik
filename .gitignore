@@ -1,0 +1,30 @@
+node_modules/
+dist/
+build/
+.next/
+.env
+.env.*
+!.env.example
+
+# Medusa
+.medusa/
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker volumes data (local dev)
+data/postgres/
+data/redis/
+data/meilisearch/
+data/minio/
+data/uptime-kuma/
