@@ -88,7 +88,7 @@ async function main() {
         title: row.title,
         description: merged.description ?? "",
         status: "published",
-        category_ids: [categoryId],
+        categories: [{ id: categoryId }],
         images: imageUrls.map((url) => ({ url })),
         thumbnail: imageUrls[0],
         sales_channels: [{ id: salesChannelId }],
