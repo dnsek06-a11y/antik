@@ -11,6 +11,14 @@ export const CONDITION_LABELS: Record<ItemCondition, string> = {
   fair: "Obnošený",
 }
 
+export const LANGUAGE_LABELS: Record<string, string> = {
+  cs: "čeština",
+  sk: "slovenština",
+  en: "angličtina",
+  de: "němčina",
+  fr: "francouzština",
+}
+
 export interface ItemDetails {
   id: string
   condition: ItemCondition

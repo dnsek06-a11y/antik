@@ -8,24 +8,17 @@ import {
   CONDITION_QUERY_KEY,
   parseItemDetailsFilters,
 } from "@lib/util/item-details-filters"
-import {
-  OPTION_VALUE_QUERY_KEY,
-  parseOptionValueIds,
-} from "@lib/util/product-option-filters"
 import ItemDetailsFilter from "./item-details-filter"
-import OptionsPicker from "./options-picker"
 import SortProducts, { SortOptions } from "./sort-products"
 
 type RefinementListProps = {
   sortBy: SortOptions
   search?: boolean
-  hideOptionsPicker?: boolean
   "data-testid"?: string
 }
 
 const RefinementList = ({
   sortBy,
-  hideOptionsPicker = true,
   "data-testid": dataTestId,
 }: RefinementListProps) => {
   const router = useRouter()
@@ -55,19 +48,6 @@ const RefinementList = ({
 
   const setQueryParams = (name: string, value: string) =>
     updateQueryParams((params) => params.set(name, value))
-
-  const selectedOptionValueIds = useMemo(
-    () => parseOptionValueIds(searchParams),
-    [searchParams]
-  )
-
-  const setOptionValueIds = (valueIds: string[]) =>
-    updateQueryParams((params) => {
-      params.delete(OPTION_VALUE_QUERY_KEY)
-      valueIds.forEach((valueId) =>
-        params.append(OPTION_VALUE_QUERY_KEY, valueId)
-      )
-    })
 
   const itemDetailsFilters = useMemo(
     () => parseItemDetailsFilters(searchParams),
@@ -103,12 +83,6 @@ const RefinementList = ({
         setConditions={setConditions}
         setRange={setRange}
       />
-      {!hideOptionsPicker && (
-        <OptionsPicker
-          selectedValueIds={selectedOptionValueIds}
-          setOptionValueIds={setOptionValueIds}
-        />
-      )}
     </div>
   )
 }

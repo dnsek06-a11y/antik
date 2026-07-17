@@ -5,20 +5,33 @@ import FastDelivery from "@modules/common/icons/fast-delivery"
 import Refresh from "@modules/common/icons/refresh"
 
 import Accordion from "./accordion"
-import { HttpTypes } from "@medusajs/types"
+import {
+  CONDITION_LABELS,
+  ItemCondition,
+  StoreProductWithItemDetails,
+} from "@lib/types/item-details"
 
 type ProductTabsProps = {
-  product: HttpTypes.StoreProduct
+  product: StoreProductWithItemDetails
+}
+
+const CONDITION_DESCRIPTIONS: Record<ItemCondition, string> = {
+  mint: "Bez viditelných stop používání, prakticky nový stav.",
+  vg_plus:
+    "Minimální stopy používání, bez zásadních vad. U desek jemné povrchové vlásenky bez vlivu na poslech.",
+  vg: "Znatelné stopy používání odpovídající stáří, funkční a plně použitelné.",
+  good: "Výraznější opotřebení (např. ohmataný obal, podpisy v knize), přesto kompletní a čitelné/hratelné.",
+  fair: "Silně opotřebený kus s viditelnými vadami – ideální spíš pro sběratele nebo jako čtecí/poslechová kopie.",
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
   const tabs = [
     {
-      label: "Product Information",
-      component: <ProductInfoTab product={product} />,
+      label: "Stav a podrobnosti",
+      component: <ConditionTab product={product} />,
     },
     {
-      label: "Shipping & Returns",
+      label: "Doprava a vrácení",
       component: <ShippingInfoTab />,
     },
   ]
@@ -41,39 +54,27 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
   )
 }
 
-const ProductInfoTab = ({ product }: ProductTabsProps) => {
+const ConditionTab = ({ product }: ProductTabsProps) => {
+  const itemDetails = product.item_details
+
   return (
-    <div className="text-small-regular py-8">
-      <div className="grid grid-cols-2 gap-x-8">
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Material</span>
-            <p>{product.material ? product.material : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Country of origin</span>
-            <p>{product.origin_country ? product.origin_country : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Type</span>
-            <p>{product.type ? product.type.value : "-"}</p>
-          </div>
+    <div className="text-small-regular py-8 flex flex-col gap-y-4">
+      {itemDetails ? (
+        <div>
+          <span className="font-semibold">
+            Stav: {CONDITION_LABELS[itemDetails.condition]}
+          </span>
+          <p className="max-w-sm">
+            {CONDITION_DESCRIPTIONS[itemDetails.condition]}
+          </p>
         </div>
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Weight</span>
-            <p>{product.weight ? `${product.weight} g` : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Dimensions</span>
-            <p>
-              {product.length && product.width && product.height
-                ? `${product.length}L x ${product.width}W x ${product.height}H`
-                : "-"}
-            </p>
-          </div>
-        </div>
-      </div>
+      ) : (
+        <p>Informace o stavu tohoto kusu nejsou k dispozici.</p>
+      )}
+      <p className="text-ui-fg-muted max-w-sm">
+        Jde o použitý, unikátní kus – skladem je vždy jen 1 ks. Fotografie u
+        inzerátu odpovídají reálnému stavu prodávaného kusu.
+      </p>
     </div>
   )
 }
@@ -85,31 +86,32 @@ const ShippingInfoTab = () => {
         <div className="flex items-start gap-x-2">
           <FastDelivery />
           <div>
-            <span className="font-semibold">Fast delivery</span>
+            <span className="font-semibold">Odeslání</span>
             <p className="max-w-sm">
-              Your package will arrive in 3-5 business days at your pick up
-              location or in the comfort of your home.
+              Zboží odesíláme obvykle do 2 pracovních dnů od objednávky,
+              pečlivě zabalené s ohledem na křehkost desek a knih.
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
           <Refresh />
           <div>
-            <span className="font-semibold">Simple exchanges</span>
+            <span className="font-semibold">Reklamace</span>
             <p className="max-w-sm">
-              Is the fit not quite right? No worries - we&apos;ll exchange your
-              product for a new one.
+              Pokud stav zboží neodpovídá popisu, kontaktujte nás – domluvíme
+              se na opravě, výměně nebo vrácení peněz.
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
           <Back />
           <div>
-            <span className="font-semibold">Easy returns</span>
+            <span className="font-semibold">Vrácení zboží</span>
             <p className="max-w-sm">
-              Just return your product and we&apos;ll refund your money. No
-              questions asked – we&apos;ll do our best to make sure your return
-              is hassle-free.
+              Jako spotřebitel máte právo odstoupit od smlouvy do 14 dnů od
+              převzetí zboží bez udání důvodu, v souladu s platnou legislativou
+              ČR. Vzhledem k unikátnosti každého kusu doporučujeme nákup
+              předem pečlivě zvážit.
             </p>
           </div>
         </div>

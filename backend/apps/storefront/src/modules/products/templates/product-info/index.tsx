@@ -1,4 +1,4 @@
-import { CONDITION_LABELS } from "@lib/types/item-details"
+import { CONDITION_LABELS, LANGUAGE_LABELS } from "@lib/types/item-details"
 import { StoreProductWithItemDetails } from "@lib/types/item-details"
 import { Heading, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -42,6 +42,23 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
             {itemDetails.year && <span>Rok: {itemDetails.year}</span>}
             {itemDetails.publisher_or_label && (
               <span>{itemDetails.publisher_or_label}</span>
+            )}
+            {itemDetails.language && (
+              <span>
+                Jazyk:{" "}
+                {LANGUAGE_LABELS[itemDetails.language] ?? itemDetails.language}
+              </span>
+            )}
+            {itemDetails.isbn && <span>ISBN: {itemDetails.isbn}</span>}
+            {itemDetails.discogs_release_id && (
+              <a
+                href={`https://www.discogs.com/release/${itemDetails.discogs_release_id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="underline hover:text-ui-fg-subtle"
+              >
+                Zobrazit na Discogs
+              </a>
             )}
           </div>
         )}
