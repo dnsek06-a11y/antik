@@ -1,6 +1,6 @@
 "use client"
 
-import { isManual, isStripeLike } from "@lib/constants"
+import { isComgate, isManual, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
@@ -38,6 +38,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     case isManual(paymentSession?.provider_id):
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
+      )
+    case isComgate(paymentSession?.provider_id):
+      return (
+        <ComgatePaymentButton
+          notReady={notReady}
+          cart={cart}
+          data-testid={dataTestId}
+        />
       )
     default:
       return <Button disabled>Select a payment method</Button>
@@ -185,6 +193,62 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
       <ErrorMessage
         error={errorMessage}
         data-testid="manual-payment-error-message"
+      />
+    </>
+  )
+}
+
+/**
+ * Comgate is a redirect gateway: there's no embedded card form, so "placing
+ * the order" here means sending the customer's browser to the payment page
+ * Comgate returned when the session was created (see comgate `initiatePayment`
+ * on the backend). The order itself is only completed once the customer
+ * returns from Comgate - see the `comgate-return` page.
+ */
+const ComgatePaymentButton = ({
+  cart,
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  cart: HttpTypes.StoreCart
+  notReady: boolean
+  "data-testid"?: string
+}) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const session = cart.payment_collection?.payment_sessions?.find(
+    (s) => s.status === "pending"
+  )
+  const redirectUrl = (session?.data as Record<string, unknown> | undefined)
+    ?.redirect as string | undefined
+
+  const handlePayment = () => {
+    if (!redirectUrl) {
+      setErrorMessage(
+        "Platbu se nepodařilo připravit. Zkuste to prosím znovu."
+      )
+      return
+    }
+
+    setSubmitting(true)
+    window.location.href = redirectUrl
+  }
+
+  return (
+    <>
+      <Button
+        disabled={notReady || !redirectUrl}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+        data-testid={dataTestId}
+      >
+        Pokračovat k platbě
+      </Button>
+      <ErrorMessage
+        error={errorMessage}
+        data-testid="comgate-payment-error-message"
       />
     </>
   )

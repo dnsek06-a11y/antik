@@ -123,12 +123,15 @@ export class AdminClient {
   }
 
   async createProduct(body: Record<string, unknown>) {
+    // Without an explicit `fields` param the response omits `inventory_items`
+    // entirely, which silently broke stock-level creation below (the
+    // `if (inventoryItemId)` check was always falsy).
     return this.request<{
       product: {
         id: string
         variants: { id: string; inventory_items: { inventory_item_id: string }[] }[]
       }
-    }>("/admin/products", {
+    }>("/admin/products?fields=id,*variants.inventory_items", {
       method: "POST",
       body: JSON.stringify(body),
     })

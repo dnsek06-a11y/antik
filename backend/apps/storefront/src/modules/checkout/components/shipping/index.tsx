@@ -62,6 +62,7 @@ const Shipping: React.FC<ShippingProps> = ({
   const [shippingMethodId, setShippingMethodId] = useState<string | null>(
     cart.shipping_methods?.at(-1)?.shipping_option_id || null
   )
+  const [pickupPointId, setPickupPointId] = useState("")
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -119,7 +120,8 @@ const Shipping: React.FC<ShippingProps> = ({
 
   const handleSetShippingMethod = async (
     id: string,
-    variant: "shipping" | "pickup"
+    variant: "shipping" | "pickup",
+    data?: Record<string, unknown>
   ) => {
     setError(null)
 
@@ -136,7 +138,7 @@ const Shipping: React.FC<ShippingProps> = ({
       return id
     })
 
-    await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
+    await setShippingMethod({ cartId: cart.id, shippingMethodId: id, data })
       .catch((err) => {
         setShippingMethodId(currentId)
 
@@ -146,6 +148,13 @@ const Shipping: React.FC<ShippingProps> = ({
         setIsLoading(false)
       })
   }
+
+  const selectedShippingOption = _shippingMethods?.find(
+    (o) => o.id === shippingMethodId
+  )
+  const needsPickupPointId =
+    (selectedShippingOption as unknown as { type?: { code?: string } })?.type
+      ?.code === "packeta-pickup-point"
 
   useEffect(() => {
     setError(null)
@@ -297,6 +306,51 @@ const Shipping: React.FC<ShippingProps> = ({
               </div>
             </div>
           </div>
+
+          {needsPickupPointId && (
+            <div className="grid mb-4">
+              <div className="flex flex-col">
+                <span className="font-medium txt-medium text-ui-fg-base">
+                  Výdejní místo Zásilkovny
+                </span>
+                <span className="mb-2 text-ui-fg-muted txt-medium">
+                  Dočasné řešení, než bude doplněn výběr na mapě - zadejte ID
+                  výdejního místa ručně (najdete ho na{" "}
+                  <a
+                    href="https://www.zasilkovna.cz/pobocky"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    zasilkovna.cz/pobocky
+                  </a>
+                  ).
+                </span>
+              </div>
+              <div className="flex gap-x-2">
+                <input
+                  type="text"
+                  value={pickupPointId}
+                  onChange={(e) => setPickupPointId(e.target.value)}
+                  placeholder="např. 13071"
+                  className="w-full border border-ui-border-base rounded-rounded px-3 py-2 txt-compact-small"
+                  data-testid="packeta-pickup-point-input"
+                />
+                <Button
+                  variant="secondary"
+                  isLoading={isLoading}
+                  disabled={!pickupPointId}
+                  onClick={() =>
+                    handleSetShippingMethod(shippingMethodId!, "shipping", {
+                      pickup_point_id: pickupPointId,
+                    })
+                  }
+                >
+                  Uložit
+                </Button>
+              </div>
+            </div>
+          )}
 
           {showPickupOptions === PICKUP_OPTION_ON && (
             <div className="grid">

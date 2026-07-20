@@ -1,6 +1,6 @@
 "use client"
 import { RadioGroup } from "@headlessui/react"
-import { isStripeLike, paymentInfoMap } from "@lib/constants"
+import { isComgate, isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import ErrorMessage from "@modules/checkout/components/error-message"
@@ -89,6 +89,22 @@ const Payment = ({
       if (!checkActiveSession) {
         await initiatePaymentSession(cart, {
           provider_id: selectedPaymentMethod,
+          // Comgate needs the payer's email/phone, but that only lives in
+          // `context.customer` for logged-in customers - guest checkouts
+          // (the common case here) have none, so pass the cart's guest
+          // contact details through explicitly.
+          ...(isComgate(selectedPaymentMethod) && {
+            data: {
+              email: cart.email,
+              phone: cart.billing_address?.phone,
+              full_name: [
+                cart.billing_address?.first_name,
+                cart.billing_address?.last_name,
+              ]
+                .filter(Boolean)
+                .join(" "),
+            },
+          }),
         })
       }
 
