@@ -82,8 +82,8 @@ se průběžně doplňují níže.
 ### Stav
 
 - [x] Fáze 2 – infrastruktura (docker-compose, Caddy, .env skeleton)
-- [ ] Fáze 3 – custom datový model (`antiquarian` modul, kategorie, import skript)
-- [ ] Fáze 4 – storefront (filtrování, produktová stránka, checkout)
-- [ ] Fáze 5 – platby a doprava (Comgate/GoPay, Zásilkovna)
+- [x] Fáze 3 – custom datový model (`antiquarian` modul, kategorie, import skript)
+- [x] Fáze 4 – storefront (filtrování dle stavu/ceny/roku, produktová stránka); branding a plný i18n pass zatím neřešeny
+- [x] Fáze 5 – platby (Comgate) a doprava (Packeta/Zásilkovna) – provider moduly hotové a ověřené proti Store API, chybí reálné sandbox přihlašovací údaje a storefront widget pro výběr výdejního místa (dočasně ruční zadání ID)
 - [ ] Fáze 6 – SEO a feedy (Heureka/Zboží, sitemap)
 - [ ] Fáze 7 – testování, GDPR, ostrý start
